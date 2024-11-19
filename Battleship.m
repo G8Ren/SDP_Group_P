@@ -17,14 +17,236 @@ close all
 % Let user decide if they want to play the computer or have a player 2
 tab = 999;
 backspace = 9999;
-fprintf('Press Space for 2 Player, Press Any Other Button To Play the Computer \n \n')
+
+% Display empty board
+% Set up variables to make it easier to identify which is which.
+blank_sprite = 1;
+water_sprite = 2;
+left_ship_sprite = 3;
+horiz_ship_sprite = 4;
+right_ship_sprite = 5;
+top_ship_sprite = 6;
+vert_ship_sprite = 7;
+bot_ship_sprite = 8;
+hit_sprite = 9;
+miss_sprite = 10;
+
+board_display = water_sprite * ones(10,21);
+hit_display = ones(10,21);
+board_display(:,11) = blank_sprite;
+
+battleship_blank = simpleGameEngine('Battleship.png',84,84);
+drawScene(battleship_blank,board_display);
+title('Press Space for 2 Player, Press Any Other Button To Play the Computer')
+
 k = waitforbuttonpress;
 value = double(get(gcf, 'CurrentCharacter'));
 if value == 32
-    fprintf('Player 2 Selected \n \n')
+    fprintf('2 Player Selected \n \n')
+
+    pause(0.5)
+
+    close all
+
+    % Initialize scene
+battleship_p1 = simpleGameEngine('Battleship.png',84,84);
+battleship_p2 = simpleGameEngine('Battleship.png',84,84);
+
+
+% Initialize variables
+turn = 1;
+gameOver = 0;
+orientationMsg = "Choose the orientation (H for horizontal or V for " + ...
+    "vertical)";
+ship_length = [5,4,3,3,2];
+hitCountPlayer = 0;
+hitCountComputer = 0;
+winner = "";
+
+
+% Display empty board
+board_display1 = water_sprite * ones(10,21);
+hit_display = ones(10,21);
+board_display1(:,11) = blank_sprite;
+drawScene(battleship_p1,board_display1);
+
+
+% Player places the ships
+% Loop over each ships
+for ship_id = 1:5
+    % initialize varaibles to use in the loop
+    valid = 0;
+    ship_placed = 0;
+
+    msgHorizontal = "Pick a grid to place the front of the ship " + ...
+        "with a length of " + string(ship_length(ship_id)) + ". " + ...
+        "Rest of the body will be filled to the right of " + ...
+        "the selected grid.";
+    msgVertical = "Pick a grid to place the front of the ship " + ...
+        "with a length of " + string(ship_length(ship_id)) + ". " + ...
+        "Rest of the body will be filled to the bottom of " + ...
+        "the selected grid.";
+
+    % display direction to help player to choose orientation
+    title(orientationMsg);
+
+
+    % loop until the input is either h or v
+    while(~valid)
+        % get the input
+        orientationInput = getKeyboardInput(battleship_p1);
+        % check if input is either h or v and if it is,
+        % set valid = 1
+        if (isequal(orientationInput, 'h') || ...
+                isequal(orientationInput, 'v'))
+            valid = 1;
+        end
+    end
+
+
+    if (isequal(orientationInput, 'h'))
+        title(msgHorizontal);
+        while(~ship_placed)
+            [r,c] = getMouseInput(battleship_p1);
+            % Place the ship if there's enough spaces
+
+            if (c < 11 && (sum(board_display1(r,c:(c+ship_length ...
+                    (ship_id)-1))) == ship_length(ship_id) * 2))
+
+                board_display1(r,c:(c+ship_length(ship_id)-1)) = 4;
+                board_display1(r,c) = 3;
+                board_display1(r,(c+ship_length(ship_id)-1)) = 5;
+                ship_placed = 1;
+                drawScene(battleship_p1,board_display1);
+
+            end
+        end
+
+    elseif (isequal(orientationInput, 'v'))
+        title(msgVertical)
+        while(~ship_placed)
+            [r,c] = getMouseInput(battleship_p1);
+
+            % Place the ship if the there's enough spaces
+            
+
+            if (r < 11 && (sum(board_display1(r:(r+ship_length ...
+                    (ship_id)-1),c)) == ship_length(ship_id) * 2))
+
+                board_display1(r:(r+ship_length(ship_id)-1),c) = 7;
+                board_display1(r,c) = 6;
+                board_display1((r+ship_length(ship_id)-1),c) = 8;
+                ship_placed = 1;
+                drawScene(battleship_p1,board_display1);
+
+            end
+        end
+    end
 end
 
+% Display empty board
+board_display2 = water_sprite * ones(10,21);
+hit_display = ones(10,21);
+board_display2(:,11) = blank_sprite;
+drawScene(battleship_p2,board_display2);
 
+
+
+
+
+% Player places the ships
+% Loop over each ships
+for ship_id = 1:5
+    % initialize varaibles to use in the loop
+    valid = 0;
+    ship_placed = 0;
+
+    msgHorizontal = "Pick a grid to place the front of the ship " + ...
+        "with a length of " + string(ship_length(ship_id)) + ". " + ...
+        "Rest of the body will be filled to the right of " + ...
+        "the selected grid.";
+    msgVertical = "Pick a grid to place the front of the ship " + ...
+        "with a length of " + string(ship_length(ship_id)) + ". " + ...
+        "Rest of the body will be filled to the bottom of " + ...
+        "the selected grid.";
+
+    % display direction to help player to choose orientation
+    title(orientationMsg);
+
+
+    % loop until the input is either h or v
+    while(~valid)
+        % get the input
+        orientationInput = getKeyboardInput(battleship_p2);
+        % check if input is either h or v and if it is,
+        % set valid = 1
+        if (isequal(orientationInput, 'h') || ...
+                isequal(orientationInput, 'v'))
+            valid = 1;
+        end
+    end
+
+
+    if (isequal(orientationInput, 'h'))
+        title(msgHorizontal);
+        while(~ship_placed)
+            [r,c] = getMouseInput(battleship_p2);
+            % Place the ship if there's enough spaces
+
+            if (c < 11 && (sum(board_display2(r,c:(c+ship_length ...
+                    (ship_id)-1))) == ship_length(ship_id) * 2))
+
+                board_display2(r,c:(c+ship_length(ship_id)-1)) = 4;
+                board_display2(r,c) = 3;
+                board_display2(r,(c+ship_length(ship_id)-1)) = 5;
+                ship_placed = 1;
+                drawScene(battleship_p2,board_display2);
+
+            end
+        end
+
+    elseif (isequal(orientationInput, 'v'))
+        title(msgVertical)
+        while(~ship_placed)
+            [r,c] = getMouseInput(battleship_p2);
+
+            % Place the ship if the there's enough spaces
+            
+
+            if (r < 11 && (sum(board_display2(r:(r+ship_length ...
+                    (ship_id)-1),c)) == ship_length(ship_id) * 2))
+
+                board_display2(r:(r+ship_length(ship_id)-1),c) = 7;
+                board_display2(r,c) = 6;
+                board_display2((r+ship_length(ship_id)-1),c) = 8;
+                ship_placed = 1;
+                drawScene(battleship_p2,board_display2);
+
+            end
+        end
+    end
+end
+
+% Figure 1 == P1
+% Figure 2 == P2
+
+battleship_blank = simpleGameEngine('Battleship.png',84,84);
+drawScene(battleship_blank,board_display);
+figure(3)
+title('Pass Computer to Player 1 and Hit Enter')
+waitforbuttonpress
+
+figure(1);
+
+
+
+%-----------------------------------------------------------------------
+%-----------------------------------------------------------------------
+%-----------------------------------------------------------------------
+
+
+
+else
 % Initialize scene
 battleship_scn = simpleGameEngine('Battleship.png',84,84);
 
@@ -81,7 +303,7 @@ for ship_id = 1:5
         "with a length of " + string(ship_length(ship_id)) + ". " + ...
         "Rest of the body will be filled to the bottom of " + ...
         "the selected grid.";
-    msgPlay = "Select location on opponent's grid to fire";
+
     % display direction to help player to choose orientation
     title(orientationMsg);
 
@@ -157,7 +379,7 @@ validCount = 0;
 while (gameOver == 0)
 
     while(playerTurn == 1) 
-        title(msgPlay);
+
         [r,c] = getMouseInput(battleship_scn);
         if (c > 11 && c < 22 && r > 0 && r < 11)
             if (opponentBoard(r,c-11) ~= 0)
@@ -237,4 +459,5 @@ while (gameOver == 0)
     end
 
 
+end
 end
