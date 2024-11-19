@@ -13,6 +13,18 @@ close all
 % their opponent's ships until one player wins.
 %-----------------------------------------------------
 
+
+% Let user decide if they want to play the computer or have a player 2
+tab = 999;
+backspace = 9999;
+fprintf('Press Space for 2 Player, Press Any Other Button To Play the Computer \n \n')
+k = waitforbuttonpress;
+value = double(get(gcf, 'CurrentCharacter'));
+if value == 32
+    fprintf('Player 2 Selected \n \n')
+end
+
+
 % Initialize scene
 battleship_scn = simpleGameEngine('Battleship.png',84,84);
 
