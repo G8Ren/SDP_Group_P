@@ -1,11 +1,15 @@
 
 function [row, col] = BattleshipAI(board_display, hit_display, lastHit, shipOrientation)
-    % BattleshipAI - Makes intelligent moves for the computer player
-    % Inputs:
-    %   board_display - The game board
-    %   hit_display - Matrix tracking hits and misses
-    %   lastHit - Structure containing info about the last successful hit
-    %   shipOrientation - Known orientation of ship being targeted (0=unknown, 1=horizontal, 2=vertical)
+
+%{
+BattleshipAI
+Input:
+    hit_display: Matrix tracking hits and misses
+    lastHit: Structure containing info about last successful hit
+    shipOrientation: Know orientation of ship being targeted (0=unknown,
+    1=horizontal, 2=vettical)
+%}
+
     
     % Constants for sprite types
     WATER = 2;
