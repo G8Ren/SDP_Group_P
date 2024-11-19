@@ -13,6 +13,18 @@ close all
 % their opponent's ships until one player wins.
 %-----------------------------------------------------
 
+
+% Let user decide if they want to play the computer or have a player 2
+tab = 999;
+backspace = 9999;
+fprintf('Press Space for 2 Player, Press Any Other Button To Play the Computer \n \n')
+k = waitforbuttonpress;
+value = double(get(gcf, 'CurrentCharacter'));
+if value == 32
+    fprintf('Player 2 Selected \n \n')
+end
+
+
 % Initialize scene
 battleship_scn = simpleGameEngine('Battleship.png',84,84);
 
@@ -61,15 +73,15 @@ for ship_id = 1:5
     valid = 0;
     ship_placed = 0;
 
-    msgHorizontal = "Pick a grid to palce the front of the ship " + ...
+    msgHorizontal = "Pick a grid to place the front of the ship " + ...
         "with a length of " + string(ship_length(ship_id)) + ". " + ...
         "Rest of the body will be filled to the right of " + ...
         "the selected grid.";
-    msgVertical = "Pick a grid to palce the front of the ship " + ...
+    msgVertical = "Pick a grid to place the front of the ship " + ...
         "with a length of " + string(ship_length(ship_id)) + ". " + ...
         "Rest of the body will be filled to the bottom of " + ...
         "the selected grid.";
-
+    msgPlay = "Select location on opponent's grid to fire";
     % display direction to help player to choose orientation
     title(orientationMsg);
 
@@ -145,7 +157,7 @@ validCount = 0;
 while (gameOver == 0)
 
     while(playerTurn == 1) 
-
+        title(msgPlay);
         [r,c] = getMouseInput(battleship_scn);
         if (c > 11 && c < 22 && r > 0 && r < 11)
             if (opponentBoard(r,c-11) ~= 0)
