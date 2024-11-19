@@ -69,7 +69,7 @@ for ship_id = 1:5
         "with a length of " + string(ship_length(ship_id)) + ". " + ...
         "Rest of the body will be filled to the bottom of " + ...
         "the selected grid.";
-
+    msgPlay = "Select location on opponent's grid to fire";
     % display direction to help player to choose orientation
     title(orientationMsg);
 
@@ -145,7 +145,7 @@ validCount = 0;
 while (gameOver == 0)
 
     while(playerTurn == 1) 
-
+        title(msgPlay);
         [r,c] = getMouseInput(battleship_scn);
         if (c > 11 && c < 22 && r > 0 && r < 11)
             if (opponentBoard(r,c-11) ~= 0)
