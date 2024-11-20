@@ -186,7 +186,7 @@ for ship_id = 1:5
         end
     end
 
-
+%Horizontal orientation of ship
     if (isequal(orientationInput, 'h'))
         title(msgHorizontal);
         while(~ship_placed)
@@ -204,7 +204,7 @@ for ship_id = 1:5
 
             end
         end
-
+%Vertical orientation of ship
     elseif (isequal(orientationInput, 'v'))
         title(msgVertical)
         while(~ship_placed)
@@ -304,7 +304,7 @@ for ship_id = 1:5
         "Rest of the body will be filled to the bottom of " + ...
         "the selected grid.";
 
-    % display direction to help player to choose orientation
+    % display direction to help player to choose orientation of ship
     title(orientationMsg);
 
 
@@ -320,7 +320,7 @@ for ship_id = 1:5
         end
     end
 
-
+%horizontal orientation of ship
     if (isequal(orientationInput, 'h'))
         title(msgHorizontal);
         while(~ship_placed)
@@ -329,7 +329,7 @@ for ship_id = 1:5
 
             if (c < 11 && (sum(board_display(r,c:(c+ship_length ...
                     (ship_id)-1))) == ship_length(ship_id) * 2))
-
+%place ship
                 board_display(r,c:(c+ship_length(ship_id)-1)) = 4;
                 board_display(r,c) = 3;
                 board_display(r,(c+ship_length(ship_id)-1)) = 5;
@@ -338,18 +338,18 @@ for ship_id = 1:5
 
             end
         end
-
+%vertical orientation of ship
     elseif (isequal(orientationInput, 'v'))
         title(msgVertical)
         while(~ship_placed)
             [r,c] = getMouseInput(battleship_scn);
 
-            % Place the ship if the there's enough spaces
+            % place the ship if the there's enough spaces
             
 
             if (r < 11 && (sum(board_display(r:(r+ship_length ...
                     (ship_id)-1),c)) == ship_length(ship_id) * 2))
-
+%places ship
                 board_display(r:(r+ship_length(ship_id)-1),c) = 7;
                 board_display(r,c) = 6;
                 board_display((r+ship_length(ship_id)-1),c) = 8;
@@ -364,7 +364,7 @@ end
 opponentBoard = Setup();
 
 
-
+%Initialize variables 
 playerTurn = 1;
 shipHit = 0;
 secondHit = 0;
@@ -378,16 +378,16 @@ validCount = 0;
 % Start game loop - go until someone wins
 while (gameOver == 0)
 
-    while(playerTurn == 1) 
+    while(playerTurn == 1) %While loop for Player1's turn
 
-        [r,c] = getMouseInput(battleship_scn);
-        if (c > 11 && c < 22 && r > 0 && r < 11)
-            if (opponentBoard(r,c-11) ~= 0)
-                hit_display(r,c) = 9;
+        [r,c] = getMouseInput(battleship_scn); 
+        if (c > 11 && c < 22 && r > 0 && r < 11)%Checks if on game board 
+            if (opponentBoard(r,c-11) ~= 0) %For hit sprite
+                hit_display(r,c) = 9; 
                 drawScene(battleship_scn, board_display, hit_display);
                 %Add 1 to hitcount
                 hitCountPlayer = hitCountPlayer + 1;
-            else
+            else %For miss sprite
                 hit_display(r,c) = 10;
                 drawScene(battleship_scn, board_display, hit_display);
             end
@@ -397,15 +397,15 @@ while (gameOver == 0)
                 winner = "Player 1";
                 gameOver = 1;
             end
-
+%End player's turn
             playerTurn = 0;
 
         end
-    end
+    end  %computer's turn
     while(playerTurn == 0)
-        validHit = 0;
+        validHit = 0; %Initialize flag 
         if (shipHit == 1 )
-            if (secondHit == 1)
+            if (secondHit == 1) %Computer to guess near hit
 
     
             else
@@ -429,8 +429,8 @@ while (gameOver == 0)
             end
             
 
-        else
-            while(validHit~=1)
+        else %if the computer has not made a hit yet then random guess
+            while(validHit~=1) 
                 randomR = randi(10,1);
                 randomC = randi(10,1);
                 if (board_display(randomR, randomC) ~= 2 && ...
@@ -442,14 +442,14 @@ while (gameOver == 0)
                     lastGuessR = randomR;
                     lastGuessC = randomC;
 
-
+%computer to check to make sure area hasn't been hit yet
                 elseif (board_display(randomR, randomC) == 2 && ...
                         hit_display(randomR, randomC) == 1)
                     hit_display(randomR, randomC) = 10;
                     validHit = 1;
                 end
                 drawScene(battleship_scn,board_display, hit_display);
-
+%turn goes back to player1 
                 playerTurn = 1;
             end
         end
