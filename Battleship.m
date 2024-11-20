@@ -64,9 +64,9 @@ hitCountPlayer = 0;
 hitCount2 = 0;
 winner = "";
 
-%Initialize AI Variables
-lastHitRow = -1;
-lastHitCol = -1;
+hitCountComputer = 0;
+lastHitRow = -1;  % Initialize to -1 (no previous hit)
+lastHitCol = -1;  % Initialize to -1 (no previous hit)
 
 % Display empty board
 board_display1 = water_sprite * ones(10,21);
@@ -456,8 +456,11 @@ end
 
 opponentBoard = Setup();
 
-
-
+% Initialize AI tracking variables
+lastHitRow = -1;
+lastHitCol = -1;
+hitCountComputer = 0;
+gameOver = 0;
 playerTurn = 1;
 shipHit = 0;
 secondHit = 0;
@@ -469,6 +472,7 @@ validCount = 0;
 
 
 % Start game loop - go until someone wins
+
 while (gameOver == 0)
 
     while(playerTurn == 1) 
@@ -514,40 +518,41 @@ while (gameOver == 0)
             if lastHitRow ~= -1
                 allMisses = true;
                 for dr = -1:1
-                    r = lastHitRow + dr;
-                    c = lastHitCol + dc;
-                    if r>=1 && r<=10 && c>=1 && c <=10
-                        if hit_display(r,c) ==9
-                            allMisses = false;
-                            break;
+                    for dc = -1:1
+                        r = lastHitRow + dr;
+                        c = lastHitCol + dc;
+                        if r>=1 && r<=10 && c>=1 && c <=10
+                            if hit_display(r,c) ==9
+                                allMisses = false;
+                                break;
+                            end
                         end
                     end
                 end
-            end
-            if allMisses
-                lastHitRow = -1;
-                lastHitCol = -1;
+                if allMisses
+                    lastHitRow = -1;
+                    lastHitCol = -1;
+                end
             end
         end
-    end
 
-    drawScene(battleship_scn, board_display, hit_display);
+        drawScene(battleship_scn, board_display, hit_display);
 
-    %checks if AI wins
-    if hitCountComputer == 17
-        winner = "Computer";
-        gameOver = 1;
-    end
-
-    playerTurn = 1;
-
-
-
+        %checks if AI wins
+        if hitCountComputer == 17
+            winner = "Computer";
+            gameOver = 1;
         end
-        
 
+        playerTurn = 1;
 
     end
+
+end
+
+end    
+
+
 
 
 
