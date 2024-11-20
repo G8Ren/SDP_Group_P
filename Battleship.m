@@ -64,6 +64,9 @@ hitCountPlayer = 0;
 hitCount2 = 0;
 winner = "";
 
+%Initialize AI Variables
+lastHitRow = -1;
+lastHitCol = -1;
 
 % Display empty board
 board_display1 = water_sprite * ones(10,21);
@@ -492,56 +495,55 @@ while (gameOver == 0)
 
         end
     end
+
     while(playerTurn == 0)
-        validHit = 0;
-        if (shipHit == 1 )
-            if (secondHit == 1)
+        %get AI's move
+        [randomR, randomC] = BattleshipAI(board_display,hit_display,lastHitRow,lastHitCol);
 
-    
-            else
+        %make the move
+        if board_display(randomR, randomC) ~= 2 %if hit
+            hit_display(randomR, randomC) = 9;
+            hitCountComputer = hitCountComputer + 1;
 
+            %save the hit for next turn
+            lastHitRow = randomR;
+            lastHitCol = randomC;
+        else %miss
+            hit_display(randomR,randomC) = 10;
 
-            end
-            while(validHit ~= 1)
-                % Guess spaces around the hit
-                guessR = randi(2,1);
-                guessC = randi(2,1);
-                if (guessR == 1 && guessC == 1) 
-
-                elseif (guessR == 2 && guessC == 1)
-
-                elseif (guessR == 1 && guessC == 2)
-
-                else
-                    
+            if lastHitRow ~= -1
+                allMisses = true;
+                for dr = -1:1
+                    r = lastHitRow + dr;
+                    c = lastHitCol + dc;
+                    if r>=1 && r<=10 && c>=1 && c <=10
+                        if hit_display(r,c) ==9
+                            allMisses = false;
+                            break;
+                        end
+                    end
                 end
-                    
             end
-            
-
-        else
-            while(validHit~=1)
-                randomR = randi(10,1);
-                randomC = randi(10,1);
-                if (board_display(randomR, randomC) ~= 2 && ...
-                        hit_display(randomR, randomC) == 1)
-                    hit_display(randomR, randomC) = 9;
-                    validHit = 1;
-                    validCount = validCount + 1;
-                    shipHit = 1;
-                    lastGuessR = randomR;
-                    lastGuessC = randomC;
-
-
-                elseif (board_display(randomR, randomC) == 2 && ...
-                        hit_display(randomR, randomC) == 1)
-                    hit_display(randomR, randomC) = 10;
-                    validHit = 1;
-                end
-                drawScene(battleship_scn,board_display, hit_display);
-
-                playerTurn = 1;
+            if allMisses
+                lastHitRow = -1;
+                lastHitCol = -1;
             end
+        end
+    end
+
+    drawScene(battleship_scn, board_display, hit_display);
+
+    %checks if AI wins
+
+    if hitCountComputer == 17
+        winner = "Computer";
+        gameOver = 1;
+    end
+
+    playerTurn = 1
+
+
+
         end
         
 
@@ -549,5 +551,4 @@ while (gameOver == 0)
     end
 
 
-end
-end
+
