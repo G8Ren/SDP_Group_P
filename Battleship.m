@@ -32,7 +32,8 @@ hit_sprite = 9;
 miss_sprite = 10;
 
 board_display = water_sprite * ones(10,21);
-hit_display = ones(10,21);
+hit_display1 = ones(10,21);
+hit_display2 = ones(10,21);
 board_display(:,11) = blank_sprite;
 
 battleship_blank = simpleGameEngine('Battleship.png',84,84);
@@ -60,7 +61,7 @@ orientationMsg = "Choose the orientation (H for horizontal or V for " + ...
     "vertical)";
 ship_length = [5,4,3,3,2];
 hitCountPlayer = 0;
-hitCountComputer = 0;
+hitCount2 = 0;
 winner = "";
 
 
@@ -186,7 +187,7 @@ for ship_id = 1:5
         end
     end
 
-%Horizontal orientation of ship
+
     if (isequal(orientationInput, 'h'))
         title(msgHorizontal);
         while(~ship_placed)
@@ -204,7 +205,7 @@ for ship_id = 1:5
 
             end
         end
-%Vertical orientation of ship
+
     elseif (isequal(orientationInput, 'v'))
         title(msgVertical)
         while(~ship_placed)
@@ -230,14 +231,103 @@ end
 % Figure 1 == P1
 % Figure 2 == P2
 
+% Initialize blank scene for switching between P1 and P2
 battleship_blank = simpleGameEngine('Battleship.png',84,84);
 drawScene(battleship_blank,board_display);
 figure(3)
 title('Pass Computer to Player 1 and Hit Enter')
 waitforbuttonpress
+pause(.01)
 
+% Switch to P1 and get mouse input for shot location
+turn = 1;
 figure(1);
+title('Left-click on the right-side grid to choose shot location')
+figure(2);
+title('Left-click on the right-side grid to choose shot location')
 
+while (gameOver == 0)
+    if turn == 1
+        figure(1)
+        drawScene(battleship_p1, board_display1, hit_display1);
+        [r, c] = getMouseInput(battleship_p1);
+        if (c > 11 && c <= 21 && r >= 1 && r <= 10)
+            shotcol = c - 11;
+            if (shotcol >= 1 && shotcol <= 10)  % Ensure shotcol is within the valid range
+                if any(board_display2(r, shotcol) == [left_ship_sprite, horiz_ship_sprite, right_ship_sprite, top_ship_sprite, vert_ship_sprite, bot_ship_sprite])  % Correct logical condition
+                    hit_display1(r, c) = hit_sprite;
+                    board_display2(r, c-11) = hit_sprite;
+                    hitCountPlayer = hitCountPlayer + 1;  % Add 1 to hit count
+                    drawScene(battleship_p1, board_display1, hit_display1);
+                else
+                    hit_display1(r, c) = miss_sprite;
+                    board_display2(r, c-11) = miss_sprite;
+                    drawScene(battleship_p1, board_display1, hit_display1);
+                end
+                drawScene(battleship_p1, board_display1, hit_display1);
+                title('Hit Enter When Ready to Continue')
+                waitforbuttonpress
+                drawScene(battleship_blank, board_display);
+                figure(3)
+                title('Pass Computer to Player 2 and Hit Enter')
+                waitforbuttonpress
+                pause(.01)
+                turn = 2;
+                % If user hits all parts of the ships, end game.
+                if (hitCountPlayer == 17)
+                    winner = "Player 1";
+                    gameOver = 1;
+                end
+            end
+        else 
+            drawScene(battleship_p1, board_display1, hit_display1);
+            title('Invalid shot location! Only Select the Hit Grid Using the Mouse')
+        end
+    else
+        figure(2)
+        drawScene(battleship_p2, board_display2, hit_display2);
+        [r, c] = getMouseInput(battleship_p2);
+        if (c > 11 && c <= 21 && r >= 1 && r <= 10)
+            shotcol = c - 11;
+            if (shotcol >= 1 && shotcol <= 10)  % Ensure shotcol is within the valid range
+                if any(board_display1(r, shotcol) == [left_ship_sprite, horiz_ship_sprite, right_ship_sprite, top_ship_sprite, vert_ship_sprite, bot_ship_sprite])  % Correct logical condition
+                    hit_display2(r, c) = hit_sprite;
+                    hitCount2 = hitCount2 + 1;  % Add 1 to hit count
+                    board_display1(r, c - 11) = hit_sprite;
+                else
+                    hit_display2(r, c) = miss_sprite;
+                    board_display1(r, c - 11) = miss_sprite;
+                end
+                drawScene(battleship_p2, board_display2, hit_display2);
+                title('Hit Enter When Ready to Continue')
+                waitforbuttonpress
+                drawScene(battleship_blank, board_display);
+                figure(3)
+                title('Pass Computer to Player 1 and Hit Enter')
+                waitforbuttonpress
+                pause(.01)
+                turn = 1;
+                % Check if Player 2 has won
+                if (hitCount2 == 17)
+                    winner = "Player 2";
+                    gameOver = 2;
+                end
+            end
+        else
+            drawScene(battleship_p2, board_display2, hit_display2);
+            title('Invalid shot location! Only Select the Hit Grid Using the Mouse')
+        end
+    end
+end
+
+if gameOver == 1
+    winp = 1;
+else
+    winp = 2;
+end
+
+close all
+fprintf('\n \n \n Player %.i Wins! \n', winp)
 
 
 %-----------------------------------------------------------------------
@@ -271,7 +361,7 @@ orientationMsg = "Choose the orientation (H for horizontal or V for " + ...
     "vertical)";
 ship_length = [5,4,3,3,2];
 hitCountPlayer = 0;
-hitCountComputer = 0;
+hitCount2 = 0;
 winner = "";
 
 
@@ -304,7 +394,7 @@ for ship_id = 1:5
         "Rest of the body will be filled to the bottom of " + ...
         "the selected grid.";
 
-    % display direction to help player to choose orientation of ship
+    % display direction to help player to choose orientation
     title(orientationMsg);
 
 
@@ -320,7 +410,7 @@ for ship_id = 1:5
         end
     end
 
-%horizontal orientation of ship
+
     if (isequal(orientationInput, 'h'))
         title(msgHorizontal);
         while(~ship_placed)
@@ -329,7 +419,7 @@ for ship_id = 1:5
 
             if (c < 11 && (sum(board_display(r,c:(c+ship_length ...
                     (ship_id)-1))) == ship_length(ship_id) * 2))
-%place ship
+
                 board_display(r,c:(c+ship_length(ship_id)-1)) = 4;
                 board_display(r,c) = 3;
                 board_display(r,(c+ship_length(ship_id)-1)) = 5;
@@ -338,18 +428,18 @@ for ship_id = 1:5
 
             end
         end
-%vertical orientation of ship
+
     elseif (isequal(orientationInput, 'v'))
         title(msgVertical)
         while(~ship_placed)
             [r,c] = getMouseInput(battleship_scn);
 
-            % place the ship if the there's enough spaces
+            % Place the ship if the there's enough spaces
             
 
             if (r < 11 && (sum(board_display(r:(r+ship_length ...
                     (ship_id)-1),c)) == ship_length(ship_id) * 2))
-%places ship
+
                 board_display(r:(r+ship_length(ship_id)-1),c) = 7;
                 board_display(r,c) = 6;
                 board_display((r+ship_length(ship_id)-1),c) = 8;
@@ -364,7 +454,7 @@ end
 opponentBoard = Setup();
 
 
-%Initialize variables 
+
 playerTurn = 1;
 shipHit = 0;
 secondHit = 0;
@@ -378,16 +468,16 @@ validCount = 0;
 % Start game loop - go until someone wins
 while (gameOver == 0)
 
-    while(playerTurn == 1) %While loop for Player1's turn
+    while(playerTurn == 1) 
 
-        [r,c] = getMouseInput(battleship_scn); 
-        if (c > 11 && c < 22 && r > 0 && r < 11)%Checks if on game board 
-            if (opponentBoard(r,c-11) ~= 0) %For hit sprite
-                hit_display(r,c) = 9; 
+        [r,c] = getMouseInput(battleship_scn);
+        if (c > 11 && c < 22 && r > 0 && r < 11)
+            if (opponentBoard(r,c-11) ~= 0)
+                hit_display(r,c) = 9;
                 drawScene(battleship_scn, board_display, hit_display);
                 %Add 1 to hitcount
                 hitCountPlayer = hitCountPlayer + 1;
-            else %For miss sprite
+            else
                 hit_display(r,c) = 10;
                 drawScene(battleship_scn, board_display, hit_display);
             end
@@ -397,15 +487,15 @@ while (gameOver == 0)
                 winner = "Player 1";
                 gameOver = 1;
             end
-%End player's turn
+
             playerTurn = 0;
 
         end
-    end  %computer's turn
+    end
     while(playerTurn == 0)
-        validHit = 0; %Initialize flag 
+        validHit = 0;
         if (shipHit == 1 )
-            if (secondHit == 1) %Computer to guess near hit
+            if (secondHit == 1)
 
     
             else
@@ -429,8 +519,8 @@ while (gameOver == 0)
             end
             
 
-        else %if the computer has not made a hit yet then random guess
-            while(validHit~=1) 
+        else
+            while(validHit~=1)
                 randomR = randi(10,1);
                 randomC = randi(10,1);
                 if (board_display(randomR, randomC) ~= 2 && ...
@@ -442,14 +532,14 @@ while (gameOver == 0)
                     lastGuessR = randomR;
                     lastGuessC = randomC;
 
-%computer to check to make sure area hasn't been hit yet
+
                 elseif (board_display(randomR, randomC) == 2 && ...
                         hit_display(randomR, randomC) == 1)
                     hit_display(randomR, randomC) = 10;
                     validHit = 1;
                 end
                 drawScene(battleship_scn,board_display, hit_display);
-%turn goes back to player1 
+
                 playerTurn = 1;
             end
         end
