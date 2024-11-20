@@ -534,13 +534,12 @@ while (gameOver == 0)
     drawScene(battleship_scn, board_display, hit_display);
 
     %checks if AI wins
-
     if hitCountComputer == 17
         winner = "Computer";
         gameOver = 1;
     end
 
-    playerTurn = 1
+    playerTurn = 1;
 
 
 
